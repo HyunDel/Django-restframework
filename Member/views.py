@@ -1,10 +1,12 @@
-from requests import delete
+from django.db import transaction
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
-from .serializers import UserSerializer, UserCreateSerializer
+
+from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, UserUpdatePutSerializer
 from .models import User
 
 # Create your views here.
@@ -30,11 +32,12 @@ class UserListView(generics.GenericAPIView):
             return UserCreateSerializer
         elif self.request.method =="GET":
             return UserSerializer
-
+    
     def get(self,request):
         serializer = self.get_serializer(self.get_queryset(), many = True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def post(self, request):
         serializer = self.get_serializer(data =request.data)
         if serializer.is_valid():
@@ -49,13 +52,27 @@ class UserUpdateView(generics.UpdateAPIView):
     """
     
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserUpdateSerializer
+    lookup_url_kwarg = "member_id"
+
+    @transaction.atomic
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
     
+class UserUpdatePutView(generics.UpdateAPIView):
+    """
+    사용자 전체 업데이트
+
+    ___
+    """
+    queryset = User.objects.all()
+    serializer_class = UserUpdatePutSerializer
+    lookup_url_kwarg = "member_id"
+
+    @transaction.atomic
     def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
-
-
-    
+        queryset = User.objects.filter(id=kwargs["member_id"])
+        return self.update(request, *args, **kwargs)
     
     # # 사용자 검색 
     # def get(self,request, **kwargs):
