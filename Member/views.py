@@ -43,7 +43,7 @@ class UserListView(generics.GenericAPIView):
             serializer.save()
             return Response(data = serializer.data,status =status.HTTP_201_CREATED)
 
-class UserUpdateView(generics.UpdateAPIView):
+class UserUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
     """
     사용자 업데이트
 
@@ -52,13 +52,14 @@ class UserUpdateView(generics.UpdateAPIView):
     
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
+    lookup_field = 'pk'
     lookup_url_kwarg = "member_id"
 
     @transaction.atomic
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
     
-class UserUpdatePutView(generics.UpdateAPIView):
+class UserUpdatePutView(generics.GenericAPIView, mixins.UpdateModelMixin):
     """
     사용자 전체 업데이트
 

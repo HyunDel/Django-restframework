@@ -32,7 +32,7 @@ class UserManager(BaseUserManager):
             print(e)
 
 class User(AbstractBaseUser):
-
+    last_login = None
     email = models.EmailField(max_length=100, null=True)
     username = models.CharField(max_length=20,unique=True)
     phone = models.CharField(max_length=12)
