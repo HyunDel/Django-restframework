@@ -47,7 +47,6 @@ class UserListView(generics.GenericAPIView):
 
     @transaction.atomic
     def post(self, request):
-        print(request)
         serializer = self.get_serializer(data =request.data)
         if serializer.is_valid():
             serializer.join(request.data)
@@ -71,7 +70,7 @@ class UserUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
     
-    
+
 class UserUpdatePutView(generics.GenericAPIView, mixins.UpdateModelMixin):
     """
     사용자 전체 업데이트

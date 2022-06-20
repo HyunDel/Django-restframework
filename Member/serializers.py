@@ -4,31 +4,32 @@ from rest_framework import serializers
 from datetime import datetime
 from .models import User
 
-# 직렬화 할때 data overrding
+# 직렬화 할때 data overrding # 완료 
 # a = 1
 # database 생성
 # a = 2
 # 오버라이딩
 
-# 직렬화 할때
+# 직렬화 할때 # 완료 
 # 데이터를 업데이트 하는 순간
 # 어떻게 값들을 넣어줄 건지
 # 정의하는 부분이 있음
 
-# 값 체크
+# 값 체크 # 완료
 # 실제로 값들이 잘 들어갔는지 체크하는 부분을 직접 핸들링
 
-# 모델 직렬화
-# 필드 읽기만 하는 옵션을 넣어줄 수 있음 확인해보기
+# 모델 직렬화 # 완료 
+# 필드 읽기만 하는 옵션을 넣어줄 수 있음 확인해보기 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only =True)
+    password = serializers.CharField()
     username =serializers.SerializerMethodField()
     date_joined = serializers.SerializerMethodField()
     
     class Meta:
         model = User
         fields = ["username","date_joined","password","phone"]
+        read_only_fields = ["password"]
 
     def get_username(self,instance):
         instance.username = f"{instance.username}[{instance.phone}]"
@@ -42,13 +43,15 @@ class UserSerializer(serializers.ModelSerializer):
         
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only =True)
+    password = serializers.CharField()
 
     class Meta:
        model = User
        fields = ["username","phone","email","password"]
+       read_only_fields = ["password"]
 
     def join(self,validated_data):
+        print(1)
         user = User(username=validated_data.get("username"),
         phone = validated_data.get("phone"),
         email = validated_data.get("email"),
@@ -58,12 +61,36 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         return user
 
+    def create(self, validated_data):
+        validated_data["phone"] = validated_data.get("phone")+str(1)
+        return super().create(validated_data)
+
+    # object 단위로 사용할 때 
+    def validate(self, attrs):
+        return super().validate(attrs)
+        
+    # 필드 단위로 사용할 때 
+    def validate_phone(self, value):
+        print(value)
+        if len(value) < 11:
+            raise serializers.ValidationError("에러에러에렁레어레어레ㅓ")
+        return value
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = ["phone","email"]
+
+    def update(self, instance, validated_data):
+        print(instance)
+        instance.email = validated_data.get('email',instance.email)
+        instance.phone = "1231231"
+        instance.save()
+
+        return instance
+        
 
 
 class UserUpdatePutSerializer(serializers.ModelSerializer):
