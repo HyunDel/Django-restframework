@@ -17,6 +17,15 @@ from .models import User
 #    - POST serializer는 4개 필드 사용
 # 2. queryset 설정
 
+class UserCreateView(mixins.CreateModelMixin,generics.GenericAPIView):
+
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
 class UserListView(generics.GenericAPIView):
     """
     사용자 검색
@@ -38,10 +47,13 @@ class UserListView(generics.GenericAPIView):
 
     @transaction.atomic
     def post(self, request):
+        print(request)
         serializer = self.get_serializer(data =request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.join(request.data)
+
             return Response(data = serializer.data,status =status.HTTP_201_CREATED)
+
 
 class UserUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
     """
@@ -58,6 +70,7 @@ class UserUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
     @transaction.atomic
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+    
     
 class UserUpdatePutView(generics.GenericAPIView, mixins.UpdateModelMixin):
     """

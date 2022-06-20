@@ -1,17 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-# Create your models here.
-class UserManager(BaseUserManager):
+import Member
 
+
+# Create your models here. # UserManager는 슈퍼유저 생성할 때 호출됨 
+class UserManager(BaseUserManager):
+  
     # 일반 유저 생성 
     def create_user(self, username, email=None, password = None, **extra_field):
         try:
-            user = self.model(username = username,  email = email)
+            user = self.model(username = username,  email = email,password=password)
+            user.set_password(password)
 
             extra_field.setdefault('is_staff', False)            
             extra_field.setdefault('is_superuser', False)
-            user.set_password(password)
             user.save()
             return user
         except Exception as e:

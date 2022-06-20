@@ -1,6 +1,5 @@
 from itertools import count
 from time import strftime
-from xmlrpc.client import _datetime_type
 from rest_framework import serializers
 from datetime import datetime
 from .models import User
@@ -27,8 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
     username =serializers.SerializerMethodField()
     date_joined = serializers.SerializerMethodField()
     
-
-    
     class Meta:
         model = User
         fields = ["username","date_joined","password","phone"]
@@ -42,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return super().to_representation(instance)
-    
+        
 
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only =True)
@@ -51,11 +48,23 @@ class UserCreateSerializer(serializers.ModelSerializer):
        model = User
        fields = ["username","phone","email","password"]
 
+    def join(self,validated_data):
+        user = User(username=validated_data.get("username"),
+        phone = validated_data.get("phone"),
+        email = validated_data.get("email"),
+        )
+        user.set_password(validated_data["password"])
+        user.save()
+
+        return user
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = ["phone","email"]
+
 
 class UserUpdatePutSerializer(serializers.ModelSerializer):
 
