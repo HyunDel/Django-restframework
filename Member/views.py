@@ -18,43 +18,51 @@ from .models import User
 # 2. queryset 설정
 
 class UserCreateView(mixins.CreateModelMixin,generics.GenericAPIView):
-
-    queryset = User.objects.all()
     serializer_class = UserCreateSerializer
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
 
-class UserListView(generics.GenericAPIView):
-    """
-    사용자 검색
 
-    ---
-    """
+class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_serializer_class(self):
-        if self.request.method =="POST":
-            return UserCreateSerializer
-        elif self.request.method =="GET":
-            return UserSerializer
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+# class UserListView(generics.GenericAPIView):
+#     """
+#     사용자 검색
+
+#     ---
+#     """
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+    # serializer 분기 나누는법 
+    # def get_serializer_class(self):
+    #     if self.request.method =="POST":
+    #         return UserCreateSerializer
+    #     elif self.request.method =="GET":
+    #         return UserSerializer
     
-    def get(self,request):
-        serializer = self.get_serializer(self.get_queryset(), many = True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    # def get(self,request):
+    #     serializer = self.get_serializer(self.get_queryset(), many = True)
+    #     return Response(serializer.data,status=status.HTTP_200_OK)
 
-    @transaction.atomic
-    def post(self, request):
-        serializer = self.get_serializer(data =request.data)
-        if serializer.is_valid():
-            serializer.join(request.data)
+    # @transaction.atomic
+    # def post(self, request):
+    #     serializer = self.get_serializer(data =request.data)
+    #     if serializer.is_valid():
+    #         serializer.join(request.data)
 
-            return Response(data = serializer.data,status =status.HTTP_201_CREATED)
+    #         return Response(data = serializer.data,status =status.HTTP_201_CREATED)
 
 
-class UserUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
+class UserUpdateView(generics.GenericAPIView,mixins.UpdateModelMixin):
     """
     사용자 업데이트
 

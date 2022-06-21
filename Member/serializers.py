@@ -1,6 +1,8 @@
 from itertools import count
 from time import strftime
 from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from datetime import datetime
 from .models import User
 
@@ -62,18 +64,21 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
     def create(self, validated_data):
-        validated_data["phone"] = validated_data.get("phone")+str(1)
-        return super().create(validated_data)
+        user = User(**validated_data)
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
 
-    # object 단위로 사용할 때 
-    def validate(self, attrs):
-        return super().validate(attrs)
-        
+    # # object 단위로 사용할 때 
+    # def validate(self, attrs):
+    #     # if len(attrs["phone"]) < 11:
+    #     raise ValidationError("test")
+    #     return attrs
+
     # 필드 단위로 사용할 때 
     def validate_phone(self, value):
-        print(value)
         if len(value) < 11:
-            raise serializers.ValidationError("에러에러에렁레어레어레ㅓ")
+            raise ValidationError("asdasdasd")
         return value
 
 
@@ -84,7 +89,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ["phone","email"]
 
     def update(self, instance, validated_data):
-        print(instance)
         instance.email = validated_data.get('email',instance.email)
         instance.phone = "1231231"
         instance.save()
