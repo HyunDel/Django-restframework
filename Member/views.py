@@ -2,11 +2,14 @@ from django.db import transaction
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import permissions
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
-from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, UserUpdatePutSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, UserUpdatePutSerializer, UserloginSerializer
 from .models import User
+from Member import serializers
 
 # Create your views here.
 
@@ -17,17 +20,23 @@ from .models import User
 #    - POST serializer는 4개 필드 사용
 # 2. queryset 설정
 
+class UserLoginView(TokenObtainPairView):
+    serializer_class = UserloginSerializer
+    permission_classes = [permissions.AllowAny]
+        
+
 class UserCreateView(mixins.CreateModelMixin,generics.GenericAPIView):
     serializer_class = UserCreateSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
 
-
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -71,6 +80,7 @@ class UserUpdateView(generics.GenericAPIView,mixins.UpdateModelMixin):
     
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
     lookup_url_kwarg = "member_id"
 
@@ -87,6 +97,7 @@ class UserUpdatePutView(generics.GenericAPIView, mixins.UpdateModelMixin):
     """
     queryset = User.objects.all()
     serializer_class = UserUpdatePutSerializer
+    permission_classes = [permissions.IsAuthenticated]
     lookup_url_kwarg = "member_id"
 
     @transaction.atomic

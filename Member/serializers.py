@@ -3,6 +3,7 @@ from time import strftime
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer,TokenRefreshSerializer
 from datetime import datetime
 from .models import User
 
@@ -23,22 +24,31 @@ from .models import User
 # 모델 직렬화 # 완료 
 # 필드 읽기만 하는 옵션을 넣어줄 수 있음 확인해보기 
 
+class UserloginSerializer(TokenObtainPairSerializer):
+    
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username']=user.username
+
+        return token
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField()
     username =serializers.SerializerMethodField()
-    date_joined = serializers.SerializerMethodField()
+    # date_joined = serializers.SerializerMethodField()
     
     class Meta:
         model = User
-        fields = ["username","date_joined","password","phone"]
+        fields = ["username","created","password","phone"]
         read_only_fields = ["password"]
 
     def get_username(self,instance):
         instance.username = f"{instance.username}[{instance.phone}]"
         return instance.username
 
-    def get_date_joined(self,instance):
-        return instance.date_joined.strftime('%Y-%m-%d %H시')
+    # def get_date_joined(self,instance):
+    #     return instance.created.strftime('%Y-%m-%d %H시')
 
     def to_representation(self, instance):
         return super().to_representation(instance)
@@ -53,7 +63,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
        read_only_fields = ["password"]
 
     def join(self,validated_data):
-        print(1)
         user = User(username=validated_data.get("username"),
         phone = validated_data.get("phone"),
         email = validated_data.get("email"),
@@ -78,7 +87,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     # 필드 단위로 사용할 때 
     def validate_phone(self, value):
         if len(value) < 11:
-            raise ValidationError("asdasdasd")
+            raise ValidationError("phone length be required at leas 11 length")
         return value
 
 
@@ -90,7 +99,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email',instance.email)
-        instance.phone = "1231231"
+        instance.phone = validated_data.get('phone',instance.phone)
         instance.save()
 
         return instance

@@ -8,43 +8,45 @@ import Member
 class UserManager(BaseUserManager):
   
     # 일반 유저 생성 
-    def create_user(self, username, email=None, password = None, **extra_field):
-        try:
-            user = self.model(username = username,  email = email,password=password)
-            user.set_password(password)
+    def create_user(self, username,password, **extra_fields):
+        user = self.model(username = username,password=password)
+        user.set_password(password)
+        user.save()
+        return user
+        # try:
+        #     user = self.model(username = username,  email = email,password=password)
+        #     user.set_password(password)
 
-            extra_field.setdefault('is_staff', False)            
-            extra_field.setdefault('is_superuser', False)
-            user.save()
-            return user
-        except Exception as e:
-            print(e)
+        #     # extra_field.setdefault('is_staff', False)            
+        #     # extra_field.setdefault('is_superuser', False)
+        #     user.save()
+        #     return user
+        # except Exception as e:
+        #     print(e)
 
     # 어드민 유저 생성 
-    def create_superuser(self, username, email=None, password=None, **extra_fields):
-        try:
-            superuser = self.create_user(username = username,password=password, email=email)
-            superuser.set_password(password)
-            superuser.is_admin = True            
-            superuser.is_superuser = True            
-            superuser.is_active = True           
-            superuser.is_staff = True
+    def create_superuser(self, username, password=None, **extra_fields):
 
-            superuser.save()
-        except Exception as e:
-            print(e)
+        return self.create_user(username, password,**extra_fields)
+        # try:
+        #     superuser = self.create_user(username = username,password=password, email=email)
+        #     superuser.set_password(password)
+        #     superuser.is_admin = True            
+        #     superuser.is_superuser = True            
+        #     superuser.is_active = True           
+        #     superuser.is_staff = True
+
+        #     superuser.save()
+        # except Exception as e:
+        #     print(e)
 
 class User(AbstractBaseUser):
     last_login = None
     email = models.EmailField(max_length=100, null=True)
     username = models.CharField(max_length=20,unique=True)
     phone = models.CharField(max_length=12)
-    
-    is_staff = models.BooleanField(default=False)    
-    is_admin = models.BooleanField(default=False)    
-    is_active = models.BooleanField(default=False)    
-    is_superuser = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
+
+    created = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'username'
 

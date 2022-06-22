@@ -59,9 +59,10 @@ MIDDLEWARE = [
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS' :{
         'Bearer' : {
-            'type' : 'apikey',
+            'type' : 'apiKey',
             'name' : 'Authorization',
-            'in':'header'
+            'in':'header',
+            'description':"JWT authorization"
         }
     }
 }
