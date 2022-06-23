@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-^51$kiy_sezl0jdc%u)d_k2mn0d7#&+qza&!2r_oc-9+blu99q
 DEBUG = True
 
 ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'Member.User'
+AUTH_USER_MODEL = 'Member.Member'
 
 
 # Application definition
@@ -114,6 +114,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default':{
+#         'ENGINE' : 'django.db.backends.postgresql',
+#         'NAME': 'tech',
+#         'USER':'hyun',
+#         'PASSWORD':'1',
+#         'HOST':'localhost',
+#         'PORT':'5432',
+#     }
+# }
 
 
 # Password validation

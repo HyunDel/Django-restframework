@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer,TokenRefreshSerializer
 from datetime import datetime
-from .models import User
+from .models import Member
 
 # 직렬화 할때 data overrding # 완료 
 # a = 1
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
     # date_joined = serializers.SerializerMethodField()
     
     class Meta:
-        model = User
+        model = Member
         fields = ["username","created","password","phone"]
         read_only_fields = ["password"]
 
@@ -61,12 +61,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField()
 
     class Meta:
-       model = User
+       model = Member
        fields = ["username","phone","email","password"]
        read_only_fields = ["password"]
 
     def join(self,validated_data):
-        user = User(username=validated_data.get("username"),
+        user = Member(username=validated_data.get("username"),
         phone = validated_data.get("phone"),
         email = validated_data.get("email"),
         )
@@ -76,7 +76,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
     def create(self, validated_data):
-        user = User(**validated_data)
+        user = Member(**validated_data)
         user.set_password(validated_data["password"])
         user.save()
         return user
@@ -97,7 +97,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
+        model = Member
         fields = ["phone","email"]
 
     def update(self, instance, validated_data):
@@ -112,5 +112,5 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class UserUpdatePutSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
+        model = Member
         fields = "__all__"

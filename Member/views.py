@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, UserUpdatePutSerializer, UserloginSerializer
-from .models import User
+from .models import Member
 from Member import serializers
 
 # Create your views here.
@@ -39,7 +39,7 @@ class UserCreateView(mixins.CreateModelMixin,generics.GenericAPIView):
 
 
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = Member.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -83,7 +83,7 @@ class UserUpdateView(generics.GenericAPIView,mixins.UpdateModelMixin):
     ---
     """
     
-    queryset = User.objects.all()
+    queryset = Member.objects.all()
     serializer_class = UserUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
@@ -100,14 +100,14 @@ class UserUpdatePutView(generics.GenericAPIView, mixins.UpdateModelMixin):
 
     ___
     """
-    queryset = User.objects.all()
+    queryset = Member.objects.all()
     serializer_class = UserUpdatePutSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_url_kwarg = "member_id"
 
     @transaction.atomic
     def put(self, request, *args, **kwargs):
-        queryset = User.objects.filter(id=kwargs["member_id"])
+        queryset = Member.objects.filter(id=kwargs["member_id"])
         return self.update(request, *args, **kwargs)
     
     # # 사용자 검색 

@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-import Member
-
 
 # Create your models here. # UserManager는 슈퍼유저 생성할 때 호출됨 
 class UserManager(BaseUserManager):
@@ -40,7 +38,7 @@ class UserManager(BaseUserManager):
         # except Exception as e:
         #     print(e)
 
-class User(AbstractBaseUser):
+class Member(AbstractBaseUser):
     last_login = None
     email = models.EmailField(max_length=100, null=True)
     username = models.CharField(max_length=20,unique=True)
@@ -58,4 +56,4 @@ class User(AbstractBaseUser):
         return self.is_admin
 
     class Meta:
-        db_table = "User"
+        db_table = "Member"
