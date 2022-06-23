@@ -22,9 +22,6 @@ from drf_yasg import openapi
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include("Member.urls")),
-    path('api/token/',TokenObtainPairView.as_view(),name='token_obtain_pair'),
-    path('api/token/verify/',TokenRefreshView.as_view(),name='token_refresh'),
-    path('api/token/refresh/',TokenVerifyView.as_view(),name='token_verify'),
 
 ]
 

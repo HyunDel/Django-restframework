@@ -23,6 +23,7 @@ from .models import User
 
 # 모델 직렬화 # 완료 
 # 필드 읽기만 하는 옵션을 넣어줄 수 있음 확인해보기 
+    
 
 class UserloginSerializer(TokenObtainPairSerializer):
     
@@ -30,8 +31,10 @@ class UserloginSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['username']=user.username
+        token['phone']=user.phone
 
         return token
+    
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField()

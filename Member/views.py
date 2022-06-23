@@ -6,7 +6,8 @@ from rest_framework import permissions
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, UserUpdatePutSerializer, UserloginSerializer
 from .models import User
 from Member import serializers
@@ -19,6 +20,10 @@ from Member import serializers
 #    - GET, POST 메소드 분기하는 serializer
 #    - POST serializer는 4개 필드 사용
 # 2. queryset 설정
+
+class UserTokenRefreshView(TokenRefreshView):
+    permission_classes =[permissions.AllowAny]
+    serializer_class = TokenRefreshSerializer
 
 class UserLoginView(TokenObtainPairView):
     serializer_class = UserloginSerializer
