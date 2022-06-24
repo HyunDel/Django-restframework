@@ -56,4 +56,4 @@ class Member(AbstractBaseUser):
         return self.is_admin
 
     class Meta:
-        db_table = "Member"
+        db_table = "member"
